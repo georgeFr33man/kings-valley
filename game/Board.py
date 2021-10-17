@@ -74,6 +74,9 @@ class Board:
     def clearBoard(self):
         self.__boardState = self.createWhiteboard()
 
+    def restoreStarterBoard(self):
+        self.__boardState = self.__createStarterBoard()
+
     def getFieldValue(self, x, y):
         if 0 <= x < self.boardWidth and 0 <= y < self.boardHeight:
             return self.__boardState[int(y)][int(x)]

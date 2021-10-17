@@ -1,5 +1,5 @@
+from __future__ import division
 import random
-
 from game.Board import Board
 from game.Game import Game
 
@@ -12,19 +12,23 @@ class ComplexityTest:
 
     def run(self):
         # 1. Generate random boards
-        # print("Running generating tests on " + str(self.__testCases) + " tests cases.")
-        # valid = 0
-        # for i in range(self.__testCases):
-        #     randomBoard = self.createRandomBoardState()
-        #     valid += 1 if self.validateBoardState(randomBoard) else 0
-        #
-        # print("Valid: " + str(valid) + " out of: " + str(self.__testCases))
+        print("Running generating tests on " + str(self.__testCases) + " tests cases.")
+        valid = 0
+        for i in range(self.__testCases):
+            randomBoard = self.createRandomBoardState()
+            valid += 1 if self.validateBoardState(randomBoard) else 0
 
         # 2. Play game randomly
         print("Running playing tests on " + str(self.__testCases) + " tests cases.")
-        # for i in range(self.__testCases):
         game = Game()
-        game.play()
+        for i in range(self.__testCases):
+            print("Playing: " + str(i + 1) + " game.")
+            game.board.restoreStarterBoard()
+            game.play()
+
+        game.printStatistics()
+        print("Valid: " + str(valid) + " out of: " + str(self.__testCases) + " (" + str(
+            float(valid / self.__testCases)) + ")")
 
     def createRandomBoardState(self):
         board = Board(self.boardWidth, self.boardHeight)

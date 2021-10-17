@@ -1,5 +1,7 @@
-import random
+from __future__ import division
 
+import copy
+import random
 from game.Board import Board
 
 
@@ -13,16 +15,37 @@ class Game:
     whitePlayer = "white"
     blackPlayer = "black"
 
+    # Statistics
+    statistics = {
+        whitePlayer: {
+            "wins": 0,
+            "numberOfMoves": [],
+            "overallNumberOfMoves": 0,
+            "availableMoves": []
+        },
+        blackPlayer: {
+            "wins": 0,
+            "numberOfMoves": [],
+            "overallNumberOfMoves": 0,
+            "availableMoves": []
+        },
+    }
+
     def __init__(self):
         self.board = Board(self.boardWidth, self.boardHeight)
 
     def play(self):
-        playerTurn = self.blackPlayer
+        playerTurn = self.whitePlayer
         playersMoves = {
             self.whitePlayer: 0,
             self.blackPlayer: 0
         }
+        iterations = 0
         while self.__whoWon() is None:
+            iterations += 1
+            if iterations > 100:
+                print("un problemmo 2")
+                self.board.printBoardState()
             if playerTurn == self.whitePlayer and playersMoves[playerTurn] == 0:
                 isFirstMove = True
             elif playerTurn == self.blackPlayer and playersMoves[playerTurn] == 0:
@@ -33,6 +56,18 @@ class Game:
             self.__move(self.__drawMove(moves))
             playersMoves[playerTurn] = playersMoves[playerTurn] + 1
             playerTurn = self.blackPlayer if playerTurn == self.whitePlayer else self.whitePlayer
+            self.__collectStatistics(playerTurn, moves)
+
+        # Collect end game statistics
+        self.statistics[self.__whoWon()]["wins"] += 1
+        self.statistics[self.blackPlayer]["numberOfMoves"].append(
+            self.statistics[self.blackPlayer]["overallNumberOfMoves"]
+        )
+        self.statistics[self.blackPlayer]["overallNumberOfMoves"] = 0
+        self.statistics[self.whitePlayer]["numberOfMoves"].append(
+            self.statistics[self.whitePlayer]["overallNumberOfMoves"]
+        )
+        self.statistics[self.whitePlayer]["overallNumberOfMoves"] = 0
 
     # Winning rules:
     # King pawn in in the center, or
@@ -84,7 +119,9 @@ class Game:
 
     def __getMoves(self, x, y, isKing, isFistMove, player=None):
         moves = []
-        for direction in self.moveDirections:
+        directions = copy.copy(self.moveDirections)
+        random.shuffle(directions)
+        for direction in directions:
             possibleMove = self.__getPossibleMove(x, y, direction[0], direction[1])
             toX = possibleMove["toX"]
             toY = possibleMove["toY"]
@@ -180,3 +217,22 @@ class Game:
             index = random.randrange(0, len(moves) - 1)
             if not moves[index]["losing"]:
                 return moves[index]
+
+    def __collectStatistics(self, player, moves):
+        self.statistics[player]["overallNumberOfMoves"] += 1
+        self.statistics[player]["availableMoves"].append(len(moves))
+
+    def printStatistics(self):
+        stats = self.statistics
+        avgAvailableMovesWhite = sum(stats[self.whitePlayer]["availableMoves"]) / len(stats[self.whitePlayer]["availableMoves"])
+        avgAvailableMovesBlack = sum(stats[self.blackPlayer]["availableMoves"]) / len(stats[self.blackPlayer]["availableMoves"])
+        avgMovesWhite = sum(stats[self.whitePlayer]["numberOfMoves"]) / len(stats[self.whitePlayer]["numberOfMoves"])
+        avgMovesBlack = sum(stats[self.blackPlayer]["numberOfMoves"]) / len(stats[self.blackPlayer]["numberOfMoves"])
+        print("White player:")
+        print ("  - wins: " + str(stats[self.whitePlayer]["wins"]))
+        print ("  - avg moves: " + str(avgMovesWhite))
+        print ("  - avg available moves: " + str(avgAvailableMovesWhite))
+        print("\nBlack player:")
+        print ("  - wins: " + str(stats[self.blackPlayer]["wins"]))
+        print ("  - avg moves: " + str(avgMovesBlack))
+        print ("  - avg available moves: " + str(avgAvailableMovesBlack))

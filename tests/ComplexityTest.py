@@ -1,6 +1,7 @@
 import random
 
 from game.Board import Board
+from game.Game import Game
 
 
 class ComplexityTest:
@@ -10,13 +11,20 @@ class ComplexityTest:
         self.boardHeight = 5
 
     def run(self):
-        print("Running test on " + str(self.__testCases) + " test cases.")
-        valid = 0
-        for i in range(self.__testCases):
-            randomBoard = self.createRandomBoardState()
-            valid += 1 if self.validateBoardState(randomBoard) else 0
+        # 1. Generate random boards
+        # print("Running generating test on " + str(self.__testCases) + " test cases.")
+        # valid = 0
+        # for i in range(self.__testCases):
+        #     randomBoard = self.createRandomBoardState()
+        #     valid += 1 if self.validateBoardState(randomBoard) else 0
+        #
+        # print("Valid: " + str(valid) + " out of: " + str(self.__testCases))
 
-        print("Valid: " + str(valid) + " out of: " + str(self.__testCases))
+        # 2. Play game randomly
+        print("Running playing test on " + str(self.__testCases) + " test cases.")
+        for i in range(self.__testCases):
+            game = Game()
+            game.play()
 
     def createRandomBoardState(self):
         board = Board(self.boardWidth, self.boardHeight)
@@ -47,7 +55,7 @@ class ComplexityTest:
     def validateBoardState(board):
         # Rules:
         # 1. Only the king can stand in the middle of the board.
-        kingsValley = board.getKingsValleyField()
+        kingsValley = board.getKingsValleyFieldCords()
         kingsValleyVal = board.getFieldValue(kingsValley["x"], kingsValley["y"])
 
         return kingsValleyVal != board.blackPawn and kingsValleyVal != board.whitePawn

@@ -22,7 +22,7 @@ class Board:
             self.boardWidth = boardWidth
             self.boardHeight = boardHeight
             self.__boardState = self.__createStarterBoard()
-            self.kingsField = self.getKingsValleyField()
+            self.kingsField = self.getKingsValleyFieldCords()
 
     def __createStarterBoard(self):
         boardState = self.createWhiteboard()
@@ -53,7 +53,7 @@ class Board:
                 singleLine += "    " + str(self.__boardState[y][x])
             print(singleLine + "\n")
 
-    def getKingsValleyField(self):
+    def getKingsValleyFieldCords(self):
         return {"x": math.floor(self.boardWidth / 2), "y": math.floor(self.boardHeight / 2)}
 
     def getKingsCords(self):
@@ -75,7 +75,10 @@ class Board:
         self.__boardState = self.createWhiteboard()
 
     def getFieldValue(self, x, y):
-        return self.__boardState[y][x]
+        if 0 <= x < self.boardWidth and 0 <= y < self.boardHeight:
+            return self.__boardState[y][x]
+
+        return -1
 
     def setFieldValue(self, x, y, val=None):
         if val is None:

@@ -12,7 +12,7 @@ class ComplexityTest:
 
     def run(self):
         # 1. Generate random boards
-        # print("Running generating test on " + str(self.__testCases) + " test cases.")
+        # print("Running generating tests on " + str(self.__testCases) + " tests cases.")
         # valid = 0
         # for i in range(self.__testCases):
         #     randomBoard = self.createRandomBoardState()
@@ -21,10 +21,10 @@ class ComplexityTest:
         # print("Valid: " + str(valid) + " out of: " + str(self.__testCases))
 
         # 2. Play game randomly
-        print("Running playing test on " + str(self.__testCases) + " test cases.")
-        for i in range(self.__testCases):
-            game = Game()
-            game.play()
+        print("Running playing tests on " + str(self.__testCases) + " tests cases.")
+        # for i in range(self.__testCases):
+        game = Game()
+        game.play()
 
     def createRandomBoardState(self):
         board = Board(self.boardWidth, self.boardHeight)

@@ -1,5 +1,4 @@
 import random
-import time
 
 from game.Board import Board
 
@@ -24,10 +23,9 @@ class Game:
             self.blackPlayer: 0
         }
         while self.__whoWon() is None:
-            if (
-                    (playerTurn == self.whitePlayer and playersMoves[self.whitePlayer] == 0) or
-                    (playerTurn == self.blackPlayer and playersMoves[self.blackPlayer] == 0)
-            ):
+            if playerTurn == self.whitePlayer and playersMoves[playerTurn] == 0:
+                isFirstMove = True
+            elif playerTurn == self.blackPlayer and playersMoves[playerTurn] == 0:
                 isFirstMove = True
             else:
                 isFirstMove = False
@@ -44,8 +42,7 @@ class Game:
         kingsFieldVal = self.board.getFieldValue(kingsFieldCords["x"], kingsFieldCords["y"])
         if kingsFieldVal == self.board.whiteKing:
             return self.whitePlayer
-        if kingsFieldVal == self.blackPlayer:
-            print('czarny krol w siedzibie')
+        if kingsFieldVal == self.board.blackKing:
             return self.blackPlayer
 
         kingsCords = self.board.getKingsCords()
@@ -74,14 +71,12 @@ class Game:
                         acceptableValues = [self.board.whitePawn, self.board.whiteKing]
                     elif player == self.blackPlayer:
                         acceptableValues = [self.board.blackPawn, self.board.blackKing]
-                    isKing = True if fieldVal in [self.board.whiteKing, self.board.blackKing] else False
-
                     if fieldVal == acceptableValues[0]:
-                        getMoves = self.__getMoves(x, y, isKing, isFirstMove, player)
+                        getMoves = self.__getMoves(x, y, False, isFirstMove, player)
                         if len(getMoves) > 0:
                             moves.extend(getMoves)
                     elif fieldVal == acceptableValues[1]:
-                        getMoves = self.__getMoves(x, y, isKing, isFirstMove, player)
+                        getMoves = self.__getMoves(x, y, True, isFirstMove, player)
                         if len(getMoves) > 0:
                             moves.extend(getMoves)
 

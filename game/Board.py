@@ -76,7 +76,7 @@ class Board:
 
     def getFieldValue(self, x, y):
         if 0 <= x < self.boardWidth and 0 <= y < self.boardHeight:
-            return self.__boardState[y][x]
+            return self.__boardState[int(y)][int(x)]
 
         return -1
 

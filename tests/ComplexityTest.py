@@ -20,7 +20,6 @@ class ComplexityTest:
 
     def createRandomBoardState(self):
         board = Board(self.boardWidth, self.boardHeight)
-        board.clearBoard()
         emptyElementsCount = (self.boardWidth * self.boardHeight) - (2 * self.boardWidth)
 
         # Add empty elements.

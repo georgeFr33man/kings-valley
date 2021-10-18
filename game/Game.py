@@ -19,16 +19,13 @@ class Game:
     statistics = {
         whitePlayer: {
             "wins": 0,
-            "numberOfMoves": [],
-            "overallNumberOfMoves": 0,
             "availableMoves": []
         },
         blackPlayer: {
             "wins": 0,
-            "numberOfMoves": [],
-            "overallNumberOfMoves": 0,
             "availableMoves": []
         },
+        "numberOfMoves": []
     }
 
     def __init__(self):
@@ -40,12 +37,9 @@ class Game:
             self.whitePlayer: 0,
             self.blackPlayer: 0
         }
-        iterations = 0
+        numberOfmoves = 0
         while self.__whoWon() is None:
-            iterations += 1
-            if iterations > 100:
-                print("un problemmo 2")
-                self.board.printBoardState()
+            numberOfmoves += 1
             if playerTurn == self.whitePlayer and playersMoves[playerTurn] == 0:
                 isFirstMove = True
             elif playerTurn == self.blackPlayer and playersMoves[playerTurn] == 0:
@@ -60,14 +54,7 @@ class Game:
 
         # Collect end game statistics
         self.statistics[self.__whoWon()]["wins"] += 1
-        self.statistics[self.blackPlayer]["numberOfMoves"].append(
-            self.statistics[self.blackPlayer]["overallNumberOfMoves"]
-        )
-        self.statistics[self.blackPlayer]["overallNumberOfMoves"] = 0
-        self.statistics[self.whitePlayer]["numberOfMoves"].append(
-            self.statistics[self.whitePlayer]["overallNumberOfMoves"]
-        )
-        self.statistics[self.whitePlayer]["overallNumberOfMoves"] = 0
+        self.statistics["numberOfMoves"].append(numberOfmoves)
 
     # Winning rules:
     # King pawn in in the center, or
@@ -180,9 +167,17 @@ class Game:
             playerKingMoves = self.__getMoves(playerKing["x"], playerKing["y"], False, True)
 
             if len(opponentKingMoves) <= 1:
-                if self.__isMoveNextToField(move["to"]["x"], move["to"]["y"], opponentKing["x"], opponentKing["y"]):
+                if (
+                    self.__isMoveNextToField(
+                        move["from"]["x"],
+                        move["from"]["y"],
+                        opponentKing["x"],
+                        opponentKing["y"]
+                    ) is False and
+                    self.__isMoveNextToField(move["to"]["x"], move["to"]["y"], opponentKing["x"], opponentKing["y"])
+                ):
                     move["winning"] = True
-            if len(playerKingMoves) <= 1:
+            if len(playerKingMoves) <= 1 and isKing is False:
                 if self.__isMoveNextToField(move["to"]["x"], move["to"]["y"], playerKing["x"], playerKing["y"]):
                     move["losing"] = True
 
@@ -202,6 +197,7 @@ class Game:
 
     def __drawMove(self, moves):
         losing = 0
+        random.shuffle(moves)
         for move in moves:
             if move["winningByKing"]:
                 return move
@@ -219,20 +215,24 @@ class Game:
                 return moves[index]
 
     def __collectStatistics(self, player, moves):
-        self.statistics[player]["overallNumberOfMoves"] += 1
         self.statistics[player]["availableMoves"].append(len(moves))
 
     def printStatistics(self):
         stats = self.statistics
-        avgAvailableMovesWhite = sum(stats[self.whitePlayer]["availableMoves"]) / len(stats[self.whitePlayer]["availableMoves"])
-        avgAvailableMovesBlack = sum(stats[self.blackPlayer]["availableMoves"]) / len(stats[self.blackPlayer]["availableMoves"])
-        avgMovesWhite = sum(stats[self.whitePlayer]["numberOfMoves"]) / len(stats[self.whitePlayer]["numberOfMoves"])
-        avgMovesBlack = sum(stats[self.blackPlayer]["numberOfMoves"]) / len(stats[self.blackPlayer]["numberOfMoves"])
+        avgAvailableMovesWhite = sum(stats[self.whitePlayer]["availableMoves"]) / len(
+            stats[self.whitePlayer]["availableMoves"])
+        avgAvailableMovesBlack = sum(stats[self.blackPlayer]["availableMoves"]) / len(
+            stats[self.blackPlayer]["availableMoves"])
+        # Remove a lot of highest number of moves because of multiple repetition of withdrawing moves
+        numberOfMoves = self.statistics["numberOfMoves"]
+        numberOfMoves.sort()
+        for i in range(int(len(numberOfMoves) * 0.7)):
+            numberOfMoves.pop()
+        avgNumberOfMoves = sum(numberOfMoves) / len(numberOfMoves)
         print("White player:")
         print ("  - wins: " + str(stats[self.whitePlayer]["wins"]))
-        print ("  - avg moves: " + str(avgMovesWhite))
         print ("  - avg available moves: " + str(avgAvailableMovesWhite))
         print("\nBlack player:")
         print ("  - wins: " + str(stats[self.blackPlayer]["wins"]))
-        print ("  - avg moves: " + str(avgMovesBlack))
         print ("  - avg available moves: " + str(avgAvailableMovesBlack))
+        print("Avg number of moves: " + str(avgNumberOfMoves))

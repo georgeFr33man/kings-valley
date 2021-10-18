@@ -226,8 +226,8 @@ class Game:
         # Remove a lot of highest number of moves because of multiple repetition of withdrawing moves
         numberOfMoves = self.statistics["numberOfMoves"]
         numberOfMoves.sort()
-        for i in range(int(len(numberOfMoves) * 0.7)):
-            numberOfMoves.pop()
+        # for i in range(int(len(numberOfMoves) * 0.7)):
+        #     numberOfMoves.pop()
         avgNumberOfMoves = sum(numberOfMoves) / len(numberOfMoves)
         print("White player:")
         print ("  - wins: " + str(stats[self.whitePlayer]["wins"]))

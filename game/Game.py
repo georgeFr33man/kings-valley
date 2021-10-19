@@ -4,6 +4,7 @@ import copy
 import random
 import game
 
+
 class Game:
     # Game defaults
     boardWidth = 5

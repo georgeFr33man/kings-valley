@@ -2,8 +2,7 @@ from __future__ import division
 
 import copy
 import random
-from game.Board import Board
-
+import game
 
 class Game:
     # Game defaults
@@ -29,7 +28,7 @@ class Game:
     }
 
     def __init__(self):
-        self.board = Board(self.boardWidth, self.boardHeight)
+        self.board = game.Board(self.boardWidth, self.boardHeight)
 
     def play(self):
         playerTurn = self.whitePlayer
@@ -70,9 +69,9 @@ class Game:
         kingsCords = self.board.getKingsCords()
         whiteKing = kingsCords["whiteKing"]
         blackKing = kingsCords["blackKing"]
-        if len(self.__getMoves(whiteKing["x"], whiteKing["y"], True, False)) == 0:
+        if len(self.getMoves(whiteKing["x"], whiteKing["y"], True, False)) == 0:
             return self.blackPlayer
-        if len(self.__getMoves(blackKing["x"], blackKing["y"], True, False)) == 0:
+        if len(self.getMoves(blackKing["x"], blackKing["y"], True, False)) == 0:
             return self.whitePlayer
 
         return None
@@ -94,17 +93,17 @@ class Game:
                     elif player == self.blackPlayer:
                         acceptableValues = [self.board.blackPawn, self.board.blackKing]
                     if fieldVal == acceptableValues[0]:
-                        getMoves = self.__getMoves(x, y, False, isFirstMove, player)
+                        getMoves = self.getMoves(x, y, False, isFirstMove, player)
                         if len(getMoves) > 0:
                             moves.extend(getMoves)
                     elif fieldVal == acceptableValues[1]:
-                        getMoves = self.__getMoves(x, y, True, isFirstMove, player)
+                        getMoves = self.getMoves(x, y, True, isFirstMove, player)
                         if len(getMoves) > 0:
                             moves.extend(getMoves)
 
         return moves
 
-    def __getMoves(self, x, y, isKing, isFistMove, player=None):
+    def getMoves(self, x, y, isKing, isFistMove, player=None):
         moves = []
         directions = copy.copy(self.moveDirections)
         random.shuffle(directions)
@@ -113,8 +112,8 @@ class Game:
             toX = possibleMove["toX"]
             toY = possibleMove["toY"]
             if self.__canBeMoved(x, y, toX, toY, isKing, isFistMove):
-                move = self.__createMove(x, y, toX, toY)
-                move = self.__checkMove(move, isKing, isFistMove, player)
+                move = game.Move(x, y, toX, toY)
+                move.checkMoveInGame(self, isKing, isFistMove, player)
                 moves.append(move)
 
         return moves
@@ -137,73 +136,25 @@ class Game:
             return False
         if fromX == toX and fromY == toY:
             return False
-        if kingsValley["x"] == toX and kingsValley["y"] == toY and isKing == False:
+        if kingsValley["x"] == toX and kingsValley["y"] == toY and isKing is False:
             return False
 
         return True
 
-    def __createMove(self, fromX, fromY, toX, toY):
-        return {
-            "from": {"x": fromX, "y": fromY},
-            "to": {"x": toX, "y": toY},
-            "winning": False,
-            "winningByKing": False,
-            "losing": False
-        }
-
-    def __checkMove(self, move, isKing, isFistMove, player=None):
-        if isFistMove:
-            return move
-        kingsValley = self.board.getKingsValleyFieldCords()
-
-        if isKing and move["to"]["x"] == kingsValley["x"] and move["to"]["y"] == kingsValley["y"]:
-            move["winningByKing"] = True
-
-        if player is not None:
-            kingsCords = self.board.getKingsCords()
-            opponentKing = kingsCords["blackKing"] if player == self.whitePlayer else kingsCords["whiteKing"]
-            playerKing = kingsCords["whiteKing"] if player == self.whitePlayer else kingsCords["blackKing"]
-            opponentKingMoves = self.__getMoves(opponentKing["x"], opponentKing["y"], False, True)
-            playerKingMoves = self.__getMoves(playerKing["x"], playerKing["y"], False, True)
-
-            if len(opponentKingMoves) <= 1:
-                if (
-                    self.__isMoveNextToField(
-                        move["from"]["x"],
-                        move["from"]["y"],
-                        opponentKing["x"],
-                        opponentKing["y"]
-                    ) is False and
-                    self.__isMoveNextToField(move["to"]["x"], move["to"]["y"], opponentKing["x"], opponentKing["y"])
-                ):
-                    move["winning"] = True
-            if len(playerKingMoves) <= 1 and isKing is False:
-                if self.__isMoveNextToField(move["to"]["x"], move["to"]["y"], playerKing["x"], playerKing["y"]):
-                    move["losing"] = True
-
-        return move
-
-    def __isMoveNextToField(self, moveX, moveY, fieldX, fieldY):
-        for direction in self.moveDirections:
-            if moveX + direction[0] == fieldX and moveY + direction[1] == fieldY:
-                return True
-
-        return False
-
     def __move(self, move):
-        fieldValue = self.board.getFieldValue(move["from"]["x"], move["from"]["y"])
-        self.board.setFieldValue(move["from"]["x"], move["from"]["y"], self.board.emptyField)
-        self.board.setFieldValue(move["to"]["x"], move["to"]["y"], fieldValue)
+        fieldValue = self.board.getFieldValue(move.moveFrom["x"], move.moveFrom["y"])
+        self.board.setFieldValue(move.moveFrom["x"], move.moveFrom["y"], self.board.emptyField)
+        self.board.setFieldValue(move.moveTo["x"], move.moveTo["y"], fieldValue)
 
     def __drawMove(self, moves):
         losing = 0
         random.shuffle(moves)
         for move in moves:
-            if move["winningByKing"]:
+            if move.winningByKing:
                 return move
-            if move["winning"]:
+            if move.winning:
                 return move
-            if move["losing"]:
+            if move.losing:
                 losing += 1
 
         if len(moves) == losing:
@@ -211,7 +162,7 @@ class Game:
 
         while True:
             index = random.randrange(0, len(moves) - 1)
-            if not moves[index]["losing"]:
+            if not moves[index].losing:
                 return moves[index]
 
     def __collectStatistics(self, player, moves):

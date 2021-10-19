@@ -15,7 +15,7 @@ class Board:
     # Board state
     __boardState = []
 
-    def __init__(self, boardWidth, boardHeight):
+    def __init__(self, boardWidth: int, boardHeight: int):
         if boardWidth % 2 == 0 or boardHeight % 2 == 0:
             sys.exit("Both board width and board height must must be an odd number. Quitting...")
         else:
@@ -43,7 +43,7 @@ class Board:
 
         return boardState
 
-    def createWhiteboard(self):
+    def createWhiteboard(self) -> list:
         return [[self.emptyField] * self.boardWidth for i in range(self.boardHeight)]
 
     def printBoardState(self):
@@ -53,10 +53,10 @@ class Board:
                 singleLine += "    " + str(self.__boardState[y][x])
             print(singleLine + "\n")
 
-    def getKingsValleyFieldCords(self):
+    def getKingsValleyFieldCords(self) -> dict:
         return {"x": math.floor(self.boardWidth / 2), "y": math.floor(self.boardHeight / 2)}
 
-    def getKingsCords(self):
+    def getKingsCords(self) -> dict:
         whiteKingX = [x for x in self.__boardState if self.whiteKing in x][0]
         blackKingX = [x for x in self.__boardState if self.blackKing in x][0]
 
@@ -77,13 +77,13 @@ class Board:
     def restoreStarterBoard(self):
         self.__boardState = self.__createStarterBoard()
 
-    def getFieldValue(self, x, y):
+    def getFieldValue(self, x: int, y: int):
         if 0 <= x < self.boardWidth and 0 <= y < self.boardHeight:
             return self.__boardState[int(y)][int(x)]
 
         return -1
 
-    def setFieldValue(self, x, y, val=None):
+    def setFieldValue(self, x: int, y: int, val=None):
         if val is None:
             val = self.emptyField
         self.__boardState[y][x] = val

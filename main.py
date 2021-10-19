@@ -1,4 +1,3 @@
-import game
 from tests.ComplexityTest import ComplexityTest
 
 if __name__ == '__main__':

@@ -1,14 +1,14 @@
 from __future__ import division
 import random
-from game.Board import Board
-from game.Game import Game
+
+import game as g
 
 
 class ComplexityTest:
-    def __init__(self, testCases):
-        self.__testCases = testCases
-        self.boardWidth = 5
-        self.boardHeight = 5
+    def __init__(self, testCases: int):
+        self.__testCases: int = testCases
+        self.boardWidth: int = 5
+        self.boardHeight: int = 5
 
     def run(self):
         # 1. Generate random boards
@@ -20,7 +20,7 @@ class ComplexityTest:
 
         # 2. Play game randomly
         print("Running playing tests on " + str(self.__testCases) + " tests cases.")
-        game = Game()
+        game = g.Game.Game()
         for i in range(self.__testCases):
             print("Playing: " + str(i + 1) + " game.")
             game.board.restoreStarterBoard()
@@ -30,8 +30,8 @@ class ComplexityTest:
         print("Valid: " + str(valid) + " out of: " + str(self.__testCases) + " (" + str(
             float(valid / self.__testCases)) + ")")
 
-    def createRandomBoardState(self):
-        board = Board(self.boardWidth, self.boardHeight)
+    def createRandomBoardState(self) -> g.Board.Board:
+        board = g.Board.Board(self.boardWidth, self.boardHeight)
         emptyElementsCount = (self.boardWidth * self.boardHeight) - (2 * self.boardWidth)
 
         # Add empty elements.
@@ -56,7 +56,7 @@ class ComplexityTest:
         return board
 
     @staticmethod
-    def validateBoardState(board):
+    def validateBoardState(board: g.Board.Board) -> bool:
         # Rules:
         # 1. Only the king can stand in the middle of the board.
         kingsValley = board.getKingsValleyFieldCords()

@@ -1,19 +1,17 @@
-import game
-
+import game as g
 
 class Move:
-    moveDirections = game.Game.moveDirections
-
-    def __init__(self, fromX, fromY, toX, toY):
+    def __init__(self, fromX: int, fromY: int, toX: int, toY: int, moveDirections: list):
         self.moveFrom = {"x": fromX, "y": fromY}
         self.moveTo = {"x": toX, "y": toY}
         self.winning = False
         self.winningByKing = False
         self.losing = False
+        self.moveDirections = moveDirections
 
-    def checkMoveInGame(self, game, isKing, isFirstMove, player):
+    def checkMoveInGame(self, game: 'g.Game.Game', isKing: bool, isFirstMove: bool, player: str) -> None:
         if isFirstMove:
-            return True
+            return None
         kingsValley = game.board.getKingsValleyFieldCords()
         if isKing and self.moveTo["x"] == kingsValley["x"] and self.moveTo["y"] == kingsValley["y"]:
             self.winningByKing = True
@@ -34,8 +32,9 @@ class Move:
             if len(playerKingMoves) <= 1 and isKing is False:
                 if self.__isMoveNextToField(playerKing["x"], playerKing["y"]):
                     self.losing = True
+        return None
 
-    def __isMoveNextToField(self, fieldX, fieldY):
+    def __isMoveNextToField(self, fieldX: int, fieldY: int) -> bool:
         for direction in self.moveDirections:
             if self.moveTo["x"] + direction[0] == fieldX and self.moveTo["y"] + direction[1] == fieldY:
                 return True

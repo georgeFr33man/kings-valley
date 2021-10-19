@@ -2,7 +2,10 @@ from __future__ import division
 
 import copy
 import random
+from typing import Optional
+
 import game
+import ai_algorithms
 
 
 class Game:
@@ -28,38 +31,43 @@ class Game:
         "numberOfMoves": []
     }
 
-    def __init__(self):
-        self.board = game.Board(self.boardWidth, self.boardHeight)
+    def __init__(
+            self,
+            whitePlayerAi: 'ai_algorithms.AiAlgorithmInterface' = None,
+            blackPlayerAi: 'ai_algorithms.AiAlgorithmInterface' = None
+    ):
+        self.board = game.Board.Board(self.boardWidth, self.boardHeight)
+        self.whitePlayerAi = whitePlayerAi(self.board) if whitePlayerAi is not None else None
+        self.blackPlayerAi = blackPlayerAi(self.board) if blackPlayerAi is not None else None
 
-    def play(self):
+    def play(self) -> None:
         playerTurn = self.whitePlayer
-        playersMoves = {
-            self.whitePlayer: 0,
-            self.blackPlayer: 0
-        }
-        numberOfmoves = 0
+        numberOfMoves = 0
         while self.__whoWon() is None:
-            numberOfmoves += 1
-            if playerTurn == self.whitePlayer and playersMoves[playerTurn] == 0:
-                isFirstMove = True
-            elif playerTurn == self.blackPlayer and playersMoves[playerTurn] == 0:
-                isFirstMove = True
+            numberOfMoves += 1
+            isFirstMove = numberOfMoves <= 2
+            availableMoves = self.__getAllAvailableMoves(playerTurn, isFirstMove)
+
+            # AI move selection if available
+            if playerTurn == self.whitePlayer and self.whitePlayerAi is not None:
+                self.__move(self.whitePlayerAi.selectMove(availableMoves))
+            elif playerTurn == self.blackPlayerAi and self.blackPlayerAi is not None:
+                self.__move(self.blackPlayerAi.selectMove(availableMoves))
             else:
-                isFirstMove = False
-            moves = self.__getAllAvailableMoves(playerTurn, isFirstMove)
-            self.__move(self.__drawMove(moves))
-            playersMoves[playerTurn] = playersMoves[playerTurn] + 1
+                self.__move(self.__drawMove(availableMoves))
             playerTurn = self.blackPlayer if playerTurn == self.whitePlayer else self.whitePlayer
-            self.__collectStatistics(playerTurn, moves)
+
+            # Statistics
+            self.__collectStatistics(playerTurn, availableMoves)
 
         # Collect end game statistics
         self.statistics[self.__whoWon()]["wins"] += 1
-        self.statistics["numberOfMoves"].append(numberOfmoves)
+        self.statistics["numberOfMoves"].append(numberOfMoves)
 
     # Winning rules:
     # King pawn in in the center, or
     # Opponent's king has no available moves
-    def __whoWon(self):
+    def __whoWon(self) -> Optional[str]:
         kingsFieldCords = self.board.getKingsValleyFieldCords()
         kingsFieldVal = self.board.getFieldValue(kingsFieldCords["x"], kingsFieldCords["y"])
         if kingsFieldVal == self.board.whiteKing:
@@ -77,7 +85,7 @@ class Game:
 
         return None
 
-    def __getAllAvailableMoves(self, player, isFirstMove=False):
+    def __getAllAvailableMoves(self, player: str, isFirstMove: bool = False) -> list:
         # Move rules:
         # 1. First move must be a pawn move.
         # 2. You can move in any direction but always as far as possible.
@@ -104,7 +112,7 @@ class Game:
 
         return moves
 
-    def getMoves(self, x, y, isKing, isFistMove, player=None):
+    def getMoves(self, x: int, y: int, isKing: bool, isFistMove: bool, player: str = None) -> list:
         moves = []
         directions = copy.copy(self.moveDirections)
         random.shuffle(directions)
@@ -113,13 +121,13 @@ class Game:
             toX = possibleMove["toX"]
             toY = possibleMove["toY"]
             if self.__canBeMoved(x, y, toX, toY, isKing, isFistMove):
-                move = game.Move(x, y, toX, toY)
+                move = game.Move.Move(x, y, toX, toY, self.moveDirections)
                 move.checkMoveInGame(self, isKing, isFistMove, player)
                 moves.append(move)
 
         return moves
 
-    def __getPossibleMove(self, fromX, fromY, xDir=0, yDir=0):
+    def __getPossibleMove(self, fromX: int, fromY: int, xDir: int = 0, yDir: int = 0) -> dict:
         toX = fromX
         toY = fromY
         while self.board.getFieldValue(toX, toY) == self.board.emptyField or (toY == fromY and toX == fromX):
@@ -131,7 +139,7 @@ class Game:
             "toY": toY - yDir
         }
 
-    def __canBeMoved(self, fromX, fromY, toX, toY, isKing, isFistMove):
+    def __canBeMoved(self, fromX: int, fromY: int, toX: int, toY: int, isKing: bool, isFistMove: bool) -> bool:
         kingsValley = self.board.getKingsValleyFieldCords()
         if isKing and isFistMove:
             return False
@@ -142,12 +150,12 @@ class Game:
 
         return True
 
-    def __move(self, move):
+    def __move(self, move: game.Move.Move):
         fieldValue = self.board.getFieldValue(move.moveFrom["x"], move.moveFrom["y"])
         self.board.setFieldValue(move.moveFrom["x"], move.moveFrom["y"], self.board.emptyField)
         self.board.setFieldValue(move.moveTo["x"], move.moveTo["y"], fieldValue)
 
-    def __drawMove(self, moves):
+    def __drawMove(self, moves: list) -> game.Move.Move:
         losing = 0
         random.shuffle(moves)
         for move in moves:
@@ -166,7 +174,7 @@ class Game:
             if not moves[index].losing:
                 return moves[index]
 
-    def __collectStatistics(self, player, moves):
+    def __collectStatistics(self, player: str, moves: list):
         self.statistics[player]["availableMoves"].append(len(moves))
 
     def printStatistics(self):
@@ -181,9 +189,9 @@ class Game:
         # print(numberOfMoves)
         avgNumberOfMoves = sum(numberOfMoves) / len(numberOfMoves)
         print("White player:")
-        print ("  - wins: " + str(stats[self.whitePlayer]["wins"]))
-        print ("  - avg available moves: " + str(avgAvailableMovesWhite))
+        print("  - wins: " + str(stats[self.whitePlayer]["wins"]))
+        print("  - avg available moves: " + str(avgAvailableMovesWhite))
         print("\nBlack player:")
-        print ("  - wins: " + str(stats[self.blackPlayer]["wins"]))
-        print ("  - avg available moves: " + str(avgAvailableMovesBlack))
+        print("  - wins: " + str(stats[self.blackPlayer]["wins"]))
+        print("  - avg available moves: " + str(avgAvailableMovesBlack))
         print("Avg number of moves: " + str(avgNumberOfMoves))

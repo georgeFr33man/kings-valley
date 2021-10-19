@@ -33,16 +33,23 @@ class Game:
 
     def __init__(
             self,
-            whitePlayerAi: 'ai_algorithms.AiAlgorithmInterface' = None,
-            blackPlayerAi: 'ai_algorithms.AiAlgorithmInterface' = None
+            whitePlayerAi: 'ai_algorithms.AbstractAiAlgorithm' = None,
+            blackPlayerAi: 'ai_algorithms.AbstractAiAlgorithm' = None
     ):
         self.board = game.Board.Board(self.boardWidth, self.boardHeight)
-        self.whitePlayerAi = whitePlayerAi(self.board) if whitePlayerAi is not None else None
-        self.blackPlayerAi = blackPlayerAi(self.board) if blackPlayerAi is not None else None
+        self.whitePlayerAi = whitePlayerAi if whitePlayerAi is not None else None
+        self.blackPlayerAi = blackPlayerAi if blackPlayerAi is not None else None
 
     def play(self) -> None:
         playerTurn = self.whitePlayer
         numberOfMoves = 0
+
+        # Attach board object to AI algorithms
+        if self.whitePlayerAi is not None:
+            self.whitePlayerAi.setBoard(self.board)
+        if self.blackPlayerAi is not None:
+            self.blackPlayerAi.setBoard(self.board)
+
         while self.__whoWon() is None:
             numberOfMoves += 1
             isFirstMove = numberOfMoves <= 2
@@ -50,9 +57,9 @@ class Game:
 
             # AI move selection if available
             if playerTurn == self.whitePlayer and self.whitePlayerAi is not None:
-                self.__move(self.whitePlayerAi.selectMove(availableMoves))
+                self.__move(self.whitePlayerAi.selectMove(availableMoves, playerTurn))
             elif playerTurn == self.blackPlayerAi and self.blackPlayerAi is not None:
-                self.__move(self.blackPlayerAi.selectMove(availableMoves))
+                self.__move(self.blackPlayerAi.selectMove(availableMoves, playerTurn))
             else:
                 self.__move(self.__drawMove(availableMoves))
             playerTurn = self.blackPlayer if playerTurn == self.whitePlayer else self.whitePlayer

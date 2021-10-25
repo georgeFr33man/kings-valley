@@ -25,14 +25,14 @@ class GameRules:
         playerPawns = board.getCache()[cls.getPlayerPawnValue(player)]
         playerKing = board.getCache()[cls.getPlayerKingValue(player)]
 
+        kingMoves = cls.getMoves(playerKing, board, True, isFirstMove)
+        if len(kingMoves) > 0:
+            moves.extend(kingMoves)
+
         for pawn in playerPawns:
             pawnMoves = cls.getMoves(pawn, board, False, isFirstMove)
             if len(pawnMoves) > 0:
                 moves.extend(pawnMoves)
-
-        kingMoves = cls.getMoves(playerKing, board, True, isFirstMove)
-        if len(kingMoves) > 0:
-            moves.extend(kingMoves)
 
         return moves
 

@@ -11,10 +11,16 @@ class MinMax(AbstractAiAlgorithm, ABC):
     # Game state evaluation values
     evaluate_Lose = float(-1000000)
     evaluate_Win = float(1000000)
+
+    evaluate_NearWin = float(900000)
+    evaluate_NearLose = float(-900000)
+
     evaluate_CanWin = float(500000)
     evaluate_CanLose = float(-500000)
+
     evaluate_GoodMove = float(250000)
     evaluate_BadMove = float(-250000)
+
     evaluate_Unknown = float(0)
 
     def __init__(self, depth: int):
@@ -32,9 +38,8 @@ class MinMax(AbstractAiAlgorithm, ABC):
         val = self.evaluate_Lose
         selectedMoveIndex = 0
         for index, move in enumerate(moves):
-            if move.isKing and (move.isWinning == True):
-                print('this should be selected now and game should ended')
-                print("Move: " + str(move.moveFrom) + " " + str(move.moveTo))
+            if move.winning:  # speed up the process a little bit.
+                return move
             evaluation = self.minmax(move, self.depth, False, player, self.board)
             if evaluation > val:
                 val = evaluation
@@ -81,10 +86,10 @@ class MinMax(AbstractAiAlgorithm, ABC):
             return self.evaluate_Lose if maximizingPlayer is False else self.evaluate_Win
 
         if move.isGivingOpportunityToLose(board):
-            return self.evaluate_Lose if maximizingPlayer is False else self.evaluate_Win
+            return self.evaluate_NearLose if maximizingPlayer is False else self.evaluate_NearWin
 
         if move.isGivingOpportunityToWin(board):
-            return self.evaluate_Win if maximizingPlayer is False else self.evaluate_Lose
+            return self.evaluate_NearWin if maximizingPlayer is False else self.evaluate_NearLose
 
         if move.isFoilingOpponentWinning(board) or move.isFreeingPlayerKing(board):
             return self.evaluate_GoodMove if maximizingPlayer is False else self.evaluate_BadMove

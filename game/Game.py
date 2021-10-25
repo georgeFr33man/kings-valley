@@ -57,8 +57,6 @@ class Game:
             # AI move selection if available
             if playerTurn == self.whitePlayer and self.whitePlayerAi is not None:
                 self.board.move(self.whitePlayerAi.selectMove(availableMoves, playerTurn))
-                print("------ Move ------")
-                self.board.printBoardState()
             elif playerTurn == self.blackPlayer and self.blackPlayerAi is not None:
                 self.board.move(self.blackPlayerAi.selectMove(availableMoves, playerTurn))
             else:

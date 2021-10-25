@@ -15,8 +15,7 @@ class MinMaxTest:
         # 1. Play game with min max algorithm
         print("Running min max playing tests on " + str(self.__testCases) + " tests cases.")
         minMax = MinMax(self.__depth)
-        minMax2 = MinMax(self.__depth + 1)
-        game = g.Game.Game(minMax, minMax2)
+        game = g.Game.Game(minMax, None)
         for i in range(self.__testCases):
             print("Playing: " + str(i + 1) + " game.")
             game.board.restoreStarterBoard()

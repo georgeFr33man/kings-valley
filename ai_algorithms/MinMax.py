@@ -31,8 +31,10 @@ class MinMax(AbstractAiAlgorithm, ABC):
     def selectMove(self, moves: list, player: str) -> 'game.Move.Move':
         val = self.evaluate_Lose
         selectedMoveIndex = 0
-        shuffle(moves)
         for index, move in enumerate(moves):
+            if move.isKing and (move.isWinning == True):
+                print('this should be selected now and game should ended')
+                print("Move: " + str(move.moveFrom) + " " + str(move.moveTo))
             evaluation = self.minmax(move, self.depth, False, player, self.board)
             if evaluation > val:
                 val = evaluation
@@ -98,4 +100,4 @@ class MinMax(AbstractAiAlgorithm, ABC):
     def __getMoveChildrenMoves(self, move: 'game.Move.Move', playerName: str, board: 'game.Board.Board') -> list:
         board.move(move)
 
-        return game.GameRules.GameRules.getMovesForPlayer(playerName, board)
+        return game.GameRules.GameRules.getMovesForPlayer(playerName, board, False)

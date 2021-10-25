@@ -49,11 +49,15 @@ class Move:
                     self.__isMoveNextToField(opponentKing)
             )
 
+        return False
+
     def isLosing(self, board: 'g.Board.Board') -> bool:
         playerKing = self.getPlayerKing(board)
         playerKingMoves = g.GameRules.GameRules.getMoves(playerKing, board, True, False, False)
         if len(playerKingMoves) <= 1 and self.isKing is False:
             return self.__isMoveNextToField(playerKing)
+
+        return False
 
     def isGivingOpportunityToLose(self, board: 'g.Board.Board') -> bool:
         opponentKing = self.getOpponentKing(board)

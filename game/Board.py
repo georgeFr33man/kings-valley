@@ -1,6 +1,8 @@
 import math
 import sys
 
+import game
+
 
 class Board:
     # Fields declaration
@@ -14,6 +16,7 @@ class Board:
 
     # Board state
     __boardState = []
+    __cache = {}
 
     def __init__(self, boardWidth: int, boardHeight: int):
         if boardWidth % 2 == 0 or boardHeight % 2 == 0:
@@ -21,6 +24,7 @@ class Board:
         else:
             self.boardWidth = boardWidth
             self.boardHeight = boardHeight
+            self.clearCache()
             self.__boardState = self.__createStarterBoard()
             self.kingsField = self.getKingsValleyFieldCords()
 
@@ -41,6 +45,12 @@ class Board:
                 else:
                     boardState[y][x] = self.emptyField
 
+                if boardState[y][x] != self.emptyField:
+                    if isinstance(self.__cache[boardState[y][x]], list):
+                        self.__cache[boardState[y][x]].append({"x": x, "y": y})
+                    else:
+                        self.__cache[boardState[y][x]] = {"x": x, "y": y}
+
         return boardState
 
     def createWhiteboard(self) -> list:
@@ -57,24 +67,16 @@ class Board:
         return {"x": math.floor(self.boardWidth / 2), "y": math.floor(self.boardHeight / 2)}
 
     def getKingsCords(self) -> dict:
-        whiteKingX = [x for x in self.__boardState if self.whiteKing in x][0]
-        blackKingX = [x for x in self.__boardState if self.blackKing in x][0]
-
         return {
-            "whiteKing": {
-                "x": whiteKingX.index(self.whiteKing),
-                "y": self.__boardState.index(whiteKingX)
-            },
-            "blackKing": {
-                "x": blackKingX.index(self.blackKing),
-                "y": self.__boardState.index(blackKingX)
-            }
+            self.whiteKing: self.__cache[self.whiteKing],
+            self.blackKing: self.__cache[self.blackKing],
         }
 
     def clearBoard(self):
         self.__boardState = self.createWhiteboard()
 
     def restoreStarterBoard(self):
+        self.clearCache()
         self.__boardState = self.__createStarterBoard()
 
     def getFieldValue(self, x: int, y: int):
@@ -90,3 +92,43 @@ class Board:
 
     def getBoardState(self):
         return self.__boardState
+
+    def move(self, move: 'game.Move.Move'):
+        fieldValue = self.getFieldValue(move.moveFrom["x"], move.moveFrom["y"])
+        self.setFieldValue(move.moveFrom["x"], move.moveFrom["y"], self.emptyField)
+        self.setFieldValue(move.moveTo["x"], move.moveTo["y"], fieldValue)
+        self.__updateCache(move)
+
+    @classmethod
+    def getPlayerPawns(cls, player: str):
+        if game.Game.Game.whitePlayer == player:
+            return [cls.whitePawn, cls.whiteKing]
+        if game.Game.Game.blackPlayer == player:
+            return [cls.blackPawn, cls.blackKing]
+
+    def getCache(self) -> dict:
+        return self.__cache
+
+    def __updateCache(self, move: 'game.Move.Move'):
+        fromX = move.moveFrom["x"]
+        fromY = move.moveFrom["y"]
+        toX = move.moveTo["x"]
+        toY = move.moveTo["y"]
+
+        for key in self.__cache:
+            if isinstance(self.__cache[key], list):
+                for idx in range(len(self.__cache[key])):
+                    cords = self.__cache[key][idx]
+                    if cords["x"] == fromX and cords["y"] == fromY:
+                        self.__cache[key][idx]["x"] = toX
+                        self.__cache[key][idx]["y"] = toY
+            elif (
+                    isinstance(self.__cache[key], dict) and
+                    self.__cache[key]["x"] == fromX and
+                    self.__cache[key]["y"] == fromY
+            ):
+                self.__cache[key]["x"] = toX
+                self.__cache[key]["y"] = toY
+
+    def clearCache(self):
+        self.__cache = {self.whitePawn: [], self.whiteKing: None, self.blackPawn: [], self.blackKing: None}

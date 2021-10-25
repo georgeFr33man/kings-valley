@@ -1,6 +1,5 @@
 from __future__ import division
 
-import copy
 import random
 from typing import Optional
 
@@ -53,29 +52,31 @@ class Game:
         while self.__whoWon() is None:
             numberOfMoves += 1
             isFirstMove = numberOfMoves <= 2
-            availableMoves = self.__getAllAvailableMoves(playerTurn, isFirstMove)
+            availableMoves = game.GameRules.GameRules.getMovesForPlayer(playerTurn, self.board, isFirstMove)
 
             # AI move selection if available
             if playerTurn == self.whitePlayer and self.whitePlayerAi is not None:
-                self.__move(self.whitePlayerAi.selectMove(availableMoves, playerTurn))
-            elif playerTurn == self.blackPlayerAi and self.blackPlayerAi is not None:
-                self.__move(self.blackPlayerAi.selectMove(availableMoves, playerTurn))
+                self.board.move(self.whitePlayerAi.selectMove(availableMoves, playerTurn))
+            elif playerTurn == self.blackPlayer and self.blackPlayerAi is not None:
+                self.board.move(self.blackPlayerAi.selectMove(availableMoves, playerTurn))
             else:
-                self.__move(self.__drawMove(availableMoves))
+                self.board.move(self.__drawMove(availableMoves))
             playerTurn = self.blackPlayer if playerTurn == self.whitePlayer else self.whitePlayer
 
             # Statistics
             self.__collectStatistics(playerTurn, availableMoves)
+            # print("------ GAME STATE ------")
+            # self.board.printBoardState()
 
         # Collect end game statistics
         self.statistics[self.__whoWon()]["wins"] += 1
         self.statistics["numberOfMoves"].append(numberOfMoves)
 
     # Winning rules:
-    # King pawn in in the center, or
+    # King pawn is in the center, or
     # Opponent's king has no available moves
     def __whoWon(self) -> Optional[str]:
-        kingsFieldCords = self.board.getKingsValleyFieldCords()
+        kingsFieldCords = self.board.kingsField
         kingsFieldVal = self.board.getFieldValue(kingsFieldCords["x"], kingsFieldCords["y"])
         if kingsFieldVal == self.board.whiteKing:
             return self.whitePlayer
@@ -83,56 +84,14 @@ class Game:
             return self.blackPlayer
 
         kingsCords = self.board.getKingsCords()
-        whiteKing = kingsCords["whiteKing"]
-        blackKing = kingsCords["blackKing"]
-        if len(self.getMoves(whiteKing["x"], whiteKing["y"], True, False)) == 0:
+        whiteKing = kingsCords[self.board.whiteKing]
+        blackKing = kingsCords[self.board.blackKing]
+        if len(game.GameRules.GameRules.getMoves(whiteKing, self.board, True, False, False)) == 0:
             return self.blackPlayer
-        if len(self.getMoves(blackKing["x"], blackKing["y"], True, False)) == 0:
+        if len(game.GameRules.GameRules.getMoves(blackKing, self.board, True, False, False)) == 0:
             return self.whitePlayer
 
         return None
-
-    def __getAllAvailableMoves(self, player: str, isFirstMove: bool = False) -> list:
-        # Move rules:
-        # 1. First move must be a pawn move.
-        # 2. You can move in any direction but always as far as possible.
-        # 3. You have to move.
-        # 4. Pawn cannot move to the center.
-        moves = []
-        for y in range(self.boardHeight):
-            for x in range(self.boardWidth):
-                fieldVal = self.board.getFieldValue(x, y)
-                if fieldVal != self.board.emptyField:
-                    acceptableValues = []
-                    if player == self.whitePlayer:
-                        acceptableValues = [self.board.whitePawn, self.board.whiteKing]
-                    elif player == self.blackPlayer:
-                        acceptableValues = [self.board.blackPawn, self.board.blackKing]
-                    if fieldVal == acceptableValues[0]:
-                        getMoves = self.getMoves(x, y, False, isFirstMove, player)
-                        if len(getMoves) > 0:
-                            moves.extend(getMoves)
-                    elif fieldVal == acceptableValues[1]:
-                        getMoves = self.getMoves(x, y, True, isFirstMove, player)
-                        if len(getMoves) > 0:
-                            moves.extend(getMoves)
-
-        return moves
-
-    def getMoves(self, x: int, y: int, isKing: bool, isFistMove: bool, player: str = None) -> list:
-        moves = []
-        directions = copy.copy(self.moveDirections)
-        random.shuffle(directions)
-        for direction in directions:
-            possibleMove = self.__getPossibleMove(x, y, direction[0], direction[1])
-            toX = possibleMove["toX"]
-            toY = possibleMove["toY"]
-            if self.__canBeMoved(x, y, toX, toY, isKing, isFistMove):
-                move = game.Move.Move(x, y, toX, toY, self.moveDirections)
-                move.checkMoveInGame(self, isKing, isFistMove, player)
-                moves.append(move)
-
-        return moves
 
     def __getPossibleMove(self, fromX: int, fromY: int, xDir: int = 0, yDir: int = 0) -> dict:
         toX = fromX
@@ -146,28 +105,10 @@ class Game:
             "toY": toY - yDir
         }
 
-    def __canBeMoved(self, fromX: int, fromY: int, toX: int, toY: int, isKing: bool, isFistMove: bool) -> bool:
-        kingsValley = self.board.getKingsValleyFieldCords()
-        if isKing and isFistMove:
-            return False
-        if fromX == toX and fromY == toY:
-            return False
-        if kingsValley["x"] == toX and kingsValley["y"] == toY and isKing is False:
-            return False
-
-        return True
-
-    def __move(self, move: game.Move.Move):
-        fieldValue = self.board.getFieldValue(move.moveFrom["x"], move.moveFrom["y"])
-        self.board.setFieldValue(move.moveFrom["x"], move.moveFrom["y"], self.board.emptyField)
-        self.board.setFieldValue(move.moveTo["x"], move.moveTo["y"], fieldValue)
-
     def __drawMove(self, moves: list) -> game.Move.Move:
         losing = 0
         random.shuffle(moves)
         for move in moves:
-            if move.winningByKing:
-                return move
             if move.winning:
                 return move
             if move.losing:

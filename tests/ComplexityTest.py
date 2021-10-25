@@ -59,7 +59,7 @@ class ComplexityTest:
     def validateBoardState(board: g.Board.Board) -> bool:
         # Rules:
         # 1. Only the king can stand in the middle of the board.
-        kingsValley = board.getKingsValleyFieldCords()
+        kingsValley = board.kingsField
         kingsValleyVal = board.getFieldValue(kingsValley["x"], kingsValley["y"])
 
         return kingsValleyVal != board.blackPawn and kingsValleyVal != board.whitePawn

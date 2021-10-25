@@ -5,5 +5,5 @@ if __name__ == '__main__':
     # complexityTest = ComplexityTest(1000)
     # complexityTest.run()
 
-    minMaxTest = MinMaxTest(10, 3)
+    minMaxTest = MinMaxTest(5, 3)
     minMaxTest.run()

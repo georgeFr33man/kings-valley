@@ -2,7 +2,6 @@ from __future__ import division
 
 import random
 from typing import Optional
-
 import game
 import ai_algorithms
 

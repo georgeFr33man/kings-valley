@@ -1,5 +1,4 @@
 from __future__ import division
-
 import game as g
 from ai_algorithms import MinMax
 

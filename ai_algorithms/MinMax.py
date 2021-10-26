@@ -1,6 +1,5 @@
 import copy
 from abc import ABC
-from random import shuffle
 
 import game
 

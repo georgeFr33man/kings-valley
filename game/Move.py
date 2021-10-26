@@ -107,15 +107,15 @@ class Move:
 
     def isFreeingPlayerKing(self, board: 'g.Board.Board') -> bool:
         playerKing = self.getPlayerKing(board)
-        return self.__isNextToField(playerKing)
+        return self.__isNextToField(playerKing) and self.__isMoveNextToField(playerKing) is False
 
     def isBlockingOpponentKing(self, board: 'g.Board.Board') -> bool:
         opponentKing = self.getOpponentKing(board)
-        return self.__isMoveNextToField(opponentKing)
+        return self.__isNextToField(opponentKing) is False and self.__isMoveNextToField(opponentKing)
 
     def isBlockingPlayerKing(self, board: 'g.Board.Board') -> bool:
         playerKing = self.getPlayerKing(board)
-        return self.__isMoveNextToField(playerKing)
+        return self.__isNextToField(playerKing) is False and self.__isMoveNextToField(playerKing)
 
 
     def __isMoveNextToField(self, cords: dict) -> bool:

@@ -61,6 +61,20 @@ W grze King's Valley nie jest możliwy remis.
   - jeżeli ruch piona to ruch na pozycję sąsiadującą z pozycją króla przeciwnika, to ruch zmniejsza liczbę ruchów króla przeciwnika,
   - wartość: <b>500 000</b>
 
+<b>Tabela wyników dla 100 rozegranych gier:</b>
+
+| Liczba wygranych gier algorytmu | Głębokość |
+| ------------------------------- | --------- |
+| 91                              | 0         |
+| 96                              | 1         |
+| 99                              | 2         |
+| 100                             | 3         |
+| 100                             | 4         |
+| 100                             | 5         |
+| 100                             | 6         |
+
+Zaimplementowana funkcja kosztu jest na tyle skuteczna, że przy głębokości 0, czyli sytuacji, gdy algorytm ocenia swoje dostępne ruchy w danej turze,
+jest w stanie w ok. 90% przypadków wygrać grę z losowym przeciwnikiem.
 
 
 

@@ -2,7 +2,7 @@ import game
 
 
 class GameRules:
-    moveDirections = [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [-1, 1], [1, -1], [1, 1]]
+    moveDirections: list = [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [-1, 1], [1, -1], [1, 1]]
 
     @classmethod
     def getPlayerPawnValue(cls, player: str):

@@ -6,17 +6,17 @@ import game
 
 class Board:
     # Fields declaration
-    emptyField = 0
+    emptyField: int = 0
 
     # Pawns and kings
-    whitePawn = 2
-    whiteKing = 3
-    blackPawn = 4
-    blackKing = 5
+    whitePawn: int = 2
+    whiteKing: int = 3
+    blackPawn: int = 4
+    blackKing: int = 5
 
     # Board state
-    __boardState = []
-    __cache = {}
+    __boardState: list = []
+    __cache: dict = {}
 
     def __init__(self, boardWidth: int, boardHeight: int):
         if boardWidth % 2 == 0 or boardHeight % 2 == 0:

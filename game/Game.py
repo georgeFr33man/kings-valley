@@ -1,6 +1,7 @@
 from __future__ import division
 
 import random
+import time
 from typing import Optional
 import game
 import ai_algorithms
@@ -8,16 +9,16 @@ import ai_algorithms
 
 class Game:
     # Game defaults
-    boardWidth = 5
-    boardHeight = 5
-    moveDirections = [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [-1, 1], [1, -1], [1, 1]]
+    boardWidth: int = 5
+    boardHeight: int = 5
+    moveDirections: list = [[0, -1], [0, 1], [-1, 0], [1, 0], [-1, -1], [-1, 1], [1, -1], [1, 1]]
 
     # Players
-    whitePlayer = "white"
-    blackPlayer = "black"
+    whitePlayer: str = "white"
+    blackPlayer: str = "black"
 
     # Statistics
-    statistics = {
+    statistics: dict = {
         whitePlayer: {
             "wins": 0,
             "availableMoves": []
@@ -26,7 +27,8 @@ class Game:
             "wins": 0,
             "availableMoves": []
         },
-        "numberOfMoves": []
+        "numberOfMoves": [],
+        "timeElapsed": 0
     }
 
     def __init__(
@@ -48,6 +50,8 @@ class Game:
         if self.blackPlayerAi is not None:
             self.blackPlayerAi.setBoard(self.board)
 
+        startTime = time.time()
+
         while self.__whoWon() is None:
             numberOfMoves += 1
             isFirstMove = numberOfMoves <= 2
@@ -67,9 +71,12 @@ class Game:
             # Statistics
             self.__collectStatistics(playerTurn, availableMoves)
 
+        endTime = time.time()
+
         # Collect end game statistics
         self.statistics[self.__whoWon()]["wins"] += 1
         self.statistics["numberOfMoves"].append(numberOfMoves)
+        self.statistics["timeElapsed"] += (endTime - startTime)
 
     # Winning rules:
     # King pawn is in the center, or
@@ -142,3 +149,4 @@ class Game:
         print("  - wins: " + str(stats[self.blackPlayer]["wins"]))
         print("  - avg available moves: " + str(avgAvailableMovesBlack))
         print("Avg number of moves: " + str(avgNumberOfMoves))
+        print("Time elapsed: " + str(self.statistics["timeElapsed"]))

@@ -1,7 +1,9 @@
 # King's Valley the board game
 
 1. <a href="#1">Złożoność.</a>
-2. <a href=#2>Algorytm MinMax.</a>
+2. <a href="#2">Algorytm MinMax.</a>
+3. <a href="#3">Porównanie MinMax z AlphaBeta</a>
+3. <a href="#4">Porównanie AlphaBeta z AlphaBeta + sortowanie</a>
 
 
 <div id="1"></div>
@@ -76,7 +78,28 @@ W grze King's Valley nie jest możliwy remis.
 Zaimplementowana funkcja kosztu jest na tyle skuteczna, że przy głębokości 0, czyli sytuacji, gdy algorytm ocenia swoje dostępne ruchy w danej turze,
 jest w stanie w ok. 90% przypadków wygrać grę z losowym przeciwnikiem.
 
+<div id="3"></div>
+
+## Porównanie czasowe MinMax z AlphaBeta
+Oba algorytmy rozegrały po 100 gier z losowym przeciwnikiem na głębokościach od 0 do 4.
+
+| Depth | AlphaBeta avg. time for 1 game (s) | MinMax avg. time for 1 game (s) | AlphaBeta Wins | MinMax Wins |
+|-------|---------------------------------|------------------------------------|--------------|-----------------|
+| 0     | 0.0241                          | 0.0221                             | 93           | 91              |
+| 1     | 0.1345                          | 0.1347                             | 97           | 96              |
+| 2     | 0.7976                          | 1.7386                             | 100          | 99              |
+| 3     | 3.7204                          | 20.2165                            | 100          | 100             |
+| 4     | 41.1839                         | 613.1320                           | 100          | 100             |
 
 
+<div id="4"></div>
 
+## Porównanie czasowe AlphaBeta z AlphaBeta + sortowanie ruchów.
+| Depth | AlphaBeta avg. time for 1 game (s) | AlphaBeta + sort avg. time for 1 game (s) | AlphaBeta Wins | AlphaBeta + sort Wins |
+|-------|---------------------------------|----------------------------------------------|--------------|-------------------------|
+| 0     | 0.0241                          | 0.01988                                      | 93           | 92                      |
+| 1     | 0.1345                          | 0.1931                                       | 97           | 96                      |
+| 2     | 0.7976                          | 0.5818                                       | 100          | 100                     |
+| 3     | 3.7204                          | 2.7929                                       | 100          | 100                     |
+| 4     | 41.1839                         | 26.7838                                      | 100          | 100                     |
 

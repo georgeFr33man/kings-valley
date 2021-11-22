@@ -98,20 +98,20 @@ class AlphaBetaSorted(AbstractAiAlgorithm, ABC):
         if move.losing:
             return self.evaluate_Lose if maximizingPlayer is False else self.evaluate_Win
 
-        # if move.isGivingOpportunityToLose(board):
-        #     return self.evaluate_NearLose if maximizingPlayer is False else self.evaluate_NearWin
-        #
-        # if move.isGivingOpportunityToWin(board):
-        #     return self.evaluate_NearWin if maximizingPlayer is False else self.evaluate_NearLose
-        #
-        # if move.isFoilingOpponentWinning(board) or move.isFreeingPlayerKing(board):
-        #     return self.evaluate_GoodMove if maximizingPlayer is False else self.evaluate_BadMove
-        #
-        # if move.isBlockingPlayerKing(board):
-        #     return self.evaluate_CanLose if maximizingPlayer is False else self.evaluate_CanWin
-        #
-        # if move.isBlockingOpponentKing(board):
-        #     return self.evaluate_CanWin if maximizingPlayer is False else self.evaluate_CanLose
+        if move.isGivingOpportunityToLose(board):
+            return self.evaluate_NearLose if maximizingPlayer is False else self.evaluate_NearWin
+
+        if move.isGivingOpportunityToWin(board):
+            return self.evaluate_NearWin if maximizingPlayer is False else self.evaluate_NearLose
+
+        if move.isFoilingOpponentWinning(board) or move.isFreeingPlayerKing(board):
+            return self.evaluate_GoodMove if maximizingPlayer is False else self.evaluate_BadMove
+
+        if move.isBlockingPlayerKing(board):
+            return self.evaluate_CanLose if maximizingPlayer is False else self.evaluate_CanWin
+
+        if move.isBlockingOpponentKing(board):
+            return self.evaluate_CanWin if maximizingPlayer is False else self.evaluate_CanLose
 
         return self.evaluate_Unknown
 

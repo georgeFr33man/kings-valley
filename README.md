@@ -95,6 +95,8 @@ Oba algorytmy rozegrały po 100 gier z losowym przeciwnikiem na głębokościach
 <div id="4"></div>
 
 ## Porównanie czasowe AlphaBeta z AlphaBeta + sortowanie ruchów.
+Oba algorytmy rozegrały po 100 gier z losowym przeciwnikiem na głębokościach od 0 do 4.
+
 | Depth | AlphaBeta avg. time for 1 game (s) | AlphaBeta + sort avg. time for 1 game (s) | AlphaBeta Wins | AlphaBeta + sort Wins |
 |-------|---------------------------------|----------------------------------------------|--------------|-------------------------|
 | 0     | 0.0241                          | 0.01988                                      | 93           | 92                      |

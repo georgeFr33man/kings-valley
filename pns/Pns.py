@@ -1,0 +1,104 @@
+from game import Move
+from game import Board
+from time import time
+from pns.Node import Node
+
+
+class Pns:
+    VAL_INF = float(10000000)
+
+    startTime: float = None
+
+    def __init__(self, resources):
+        self.board = None
+        self.resources = resources
+
+    def run(self, root: 'Move', startingBoard: 'Board', startingPlayer: str):
+        # Start counting time
+        self.startTime = time()
+
+        rootNode = Node(root, startingBoard, startingPlayer)
+        print('\nStarting Proof: ' + str(rootNode.proof) + '\nStarting Disproof: ' + str(rootNode.disproof))
+        self.evaluate(rootNode)
+        self.setProofAndDisproofNumbers(rootNode)
+        current = rootNode
+        while rootNode.proof != 0 and rootNode.disproof != 0 and self.resourcesAvailable():
+            mostProving = self.selectMostProvingNode(current)
+            self.expandNode(mostProving)
+            current = self.updateAncestors(mostProving, rootNode)
+
+        print('\nProof: ' + str(rootNode.proof) + '\nDisproof: ' + str(rootNode.disproof))
+
+    def evaluate(self, root: 'Node') -> None:
+        root.evalGoal()
+
+    def setProofAndDisproofNumbers(self, node: 'Node'):
+        if node.isExpanded():
+            if node.isOrPlayer is False:
+                node.proof = 0
+                node.disproof = self.VAL_INF
+                for child in node.getChildren():
+                    node.proof += child.proof if child.proof is not None else 0
+                    node.disproof = min(node.disproof, child.disproof)
+            else:
+                node.proof = self.VAL_INF
+                node.disproof = 0
+                for child in node.getChildren():
+                    node.disproof += child.disproof if child.disproof is not None else 0
+                    node.proof = min(node.proof, child.proof)
+        else:
+            if node.value == node.NODE_WIN:
+                node.proof = 0
+                node.disproof = self.VAL_INF
+            elif node.value == node.NODE_LOSE:
+                node.proof = self.VAL_INF
+                node.disproof = 0
+            else:
+                node.proof = 1
+                node.disproof = 1
+
+    def selectMostProvingNode(self, node: 'Node') -> 'Node':
+        best = node
+        while node.isExpanded():
+            value = self.VAL_INF
+            if node.isOrPlayer is False:
+                for child in node.getChildren():
+                    if value > child.disproof:
+                        best = child
+                        value = child.disproof
+            else:
+                for child in node.getChildren():
+                    if value > child.proof:
+                        best = child
+                        value = child.proof
+            node = best
+
+        return node
+
+    def expandNode(self, node: 'Node') -> None:
+        node.expandNode()
+        for child in node.getChildren():
+            self.evaluate(child)
+            self.setProofAndDisproofNumbers(child)
+            if node.isOrPlayer is False:
+                if child.disproof == 0:
+                    break
+            else:
+                if child.proof == 0:
+                    break
+        node.expanded = True
+
+    def updateAncestors(self, node: 'Node', root: 'Node'):
+        while node.isRoot() is False:
+            oldProof = node.proof
+            oldDisproof = node.disproof
+            self.setProofAndDisproofNumbers(node)
+            if node.proof == oldProof and node.disproof == oldDisproof:
+                return node
+            node = node.getParent()
+        self.setProofAndDisproofNumbers(root)
+
+        return root
+
+    def resourcesAvailable(self) -> bool:
+        return time() - self.startTime <= self.resources

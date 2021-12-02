@@ -5,6 +5,7 @@ import time
 from typing import Optional
 import game
 import ai_algorithms
+from pns import Pns
 
 
 class Game:
@@ -34,11 +35,17 @@ class Game:
     def __init__(
             self,
             whitePlayerAi: 'ai_algorithms.AbstractAiAlgorithm' = None,
-            blackPlayerAi: 'ai_algorithms.AbstractAiAlgorithm' = None
+            blackPlayerAi: 'ai_algorithms.AbstractAiAlgorithm' = None,
+            maxRounds: int = None,
+            ourPlayer: str = None,
+            resources: float = None
     ):
         self.board = game.Board.Board(self.boardWidth, self.boardHeight)
-        self.whitePlayerAi = whitePlayerAi if whitePlayerAi is not None else None
-        self.blackPlayerAi = blackPlayerAi if blackPlayerAi is not None else None
+        self.whitePlayerAi = whitePlayerAi
+        self.blackPlayerAi = blackPlayerAi
+        self.maxRounds = maxRounds
+        self.ourPlayer = ourPlayer
+        self.resources = resources
 
     def play(self) -> None:
         playerTurn = self.whitePlayer
@@ -57,15 +64,43 @@ class Game:
             isFirstMove = numberOfMoves <= 2
             availableMoves = game.GameRules.GameRules.getMovesForPlayer(playerTurn, self.board, isFirstMove)
 
+            # Check if PNS should run now
+            runPns = self.maxRounds is not None and int(numberOfMoves / 2) == self.maxRounds
+
             # AI move selection if available
             if playerTurn == self.whitePlayer and self.whitePlayerAi is not None:
-                self.board.move(self.whitePlayerAi.selectMove(availableMoves, playerTurn))
+                selectedMove = self.whitePlayerAi.selectMove(availableMoves, playerTurn)
+
+                # Run PNS algorithm and break the game.
+                if runPns and self.ourPlayer == self.whitePlayer:
+                    pns = Pns(self.resources)
+                    pns.run(selectedMove, self.board, self.whitePlayer)
+                    break
+
+                self.board.move(selectedMove)
                 # print("------ Move ------")
                 # self.board.printBoardState()
             elif playerTurn == self.blackPlayer and self.blackPlayerAi is not None:
-                self.board.move(self.blackPlayerAi.selectMove(availableMoves, playerTurn))
+                selectedMove = self.blackPlayerAi.selectMove(availableMoves, playerTurn)
+
+                # Run PNS algorithm and break the game.
+                if runPns and self.ourPlayer == self.blackPlayer:
+                    pns = Pns(self.resources)
+                    pns.run(selectedMove, self.board, self.blackPlayer)
+                    break
+
+                self.board.move(selectedMove)
             else:
-                self.board.move(self.__drawMove(availableMoves))
+                selectedMove = self.__drawMove(availableMoves)
+
+                # Run PNS algorithm and break the game.
+                if runPns:
+                    pns = Pns(self.resources)
+                    pns.run(selectedMove, self.board, self.ourPlayer)
+                    break
+
+                self.board.move(selectedMove)
+
             playerTurn = self.blackPlayer if playerTurn == self.whitePlayer else self.whitePlayer
 
             # Statistics
@@ -74,9 +109,10 @@ class Game:
         endTime = time.time()
 
         # Collect end game statistics
-        self.statistics[self.__whoWon()]["wins"] += 1
-        self.statistics["numberOfMoves"].append(numberOfMoves)
-        self.statistics["timeElapsed"] += (endTime - startTime)
+        if self.maxRounds is None:
+            self.statistics[self.__whoWon()]["wins"] += 1
+            self.statistics["numberOfMoves"].append(numberOfMoves)
+            self.statistics["timeElapsed"] += (endTime - startTime)
 
     # Winning rules:
     # King pawn is in the center, or

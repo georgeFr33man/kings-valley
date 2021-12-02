@@ -132,3 +132,4 @@ class Board:
 
     def clearCache(self):
         self.__cache = {self.whitePawn: [], self.whiteKing: None, self.blackPawn: [], self.blackKing: None}
+

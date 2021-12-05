@@ -18,7 +18,6 @@ class Node:
     disproof: int = None
     proof: int = None
     value: float = None
-    expanded: bool = False
 
     __parent: 'Node' = None
     __children: list = []
@@ -31,7 +30,7 @@ class Node:
         self.__parent = parent
 
     def isExpanded(self) -> bool:
-        return len(self.__children) != 0 and self.expanded is not False
+        return len(self.__children) != 0
 
     def isRoot(self) -> bool:
         return self.__parent is None

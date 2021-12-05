@@ -12,13 +12,14 @@ class PnsTest:
         self.__resources = resources
 
     def run(self):
-        # 1. Play game with AlphaBetaSorted algorithms.
+        # 1. Play game with random algorithms.
         # Stop after given number of moves and try to proof win/lose of the selected player
+        print("\n---------------------------------\n")
         print("Running PNS algorithm tests on " + str(self.__testCases) + " tests cases.")
-        abs1 = AlphaBetaSorted(self.__depth)
-        # abs2 = AlphaBetaSorted(self.__depth - 1)
-        game = g.Game.Game(abs1, None, self.__maxMoves, self.__playerName, self.__resources)
+        game = g.Game.Game(None, None, self.__maxMoves, self.__playerName, self.__resources)
         for i in range(self.__testCases):
-            print("Playing: " + str(i + 1) + " game.")
+            # print("Playing: " + str(i + 1) + " game.")
             game.board.restoreStarterBoard()
             game.play()
+        game.printPnsStatistics()
+

@@ -2,6 +2,7 @@ from __future__ import division
 
 import random
 import time
+from collections import Counter
 from typing import Optional
 import game
 import ai_algorithms
@@ -29,7 +30,9 @@ class Game:
             "availableMoves": []
         },
         "numberOfMoves": [],
-        "timeElapsed": 0
+        "timeElapsed": 0,
+        "proves": [],
+        "disproves": []
     }
 
     def __init__(
@@ -70,33 +73,28 @@ class Game:
             # AI move selection if available
             if playerTurn == self.whitePlayer and self.whitePlayerAi is not None:
                 selectedMove = self.whitePlayerAi.selectMove(availableMoves, playerTurn)
-
                 # Run PNS algorithm and break the game.
                 if runPns and self.ourPlayer == self.whitePlayer:
                     pns = Pns(self.resources)
-                    pns.run(selectedMove, self.board, self.whitePlayer)
+                    self.__collectPnsStats(pns.run(selectedMove, self.board, self.whitePlayer))
                     break
 
                 self.board.move(selectedMove)
-                # print("------ Move ------")
-                # self.board.printBoardState()
             elif playerTurn == self.blackPlayer and self.blackPlayerAi is not None:
                 selectedMove = self.blackPlayerAi.selectMove(availableMoves, playerTurn)
-
                 # Run PNS algorithm and break the game.
                 if runPns and self.ourPlayer == self.blackPlayer:
                     pns = Pns(self.resources)
-                    pns.run(selectedMove, self.board, self.blackPlayer)
+                    self.__collectPnsStats(pns.run(selectedMove, self.board, self.blackPlayer))
                     break
 
                 self.board.move(selectedMove)
             else:
                 selectedMove = self.__drawMove(availableMoves)
-
                 # Run PNS algorithm and break the game.
                 if runPns:
                     pns = Pns(self.resources)
-                    pns.run(selectedMove, self.board, self.ourPlayer)
+                    self.__collectPnsStats(pns.run(selectedMove, self.board, self.ourPlayer))
                     break
 
                 self.board.move(selectedMove)
@@ -167,6 +165,10 @@ class Game:
     def __collectStatistics(self, player: str, moves: list):
         self.statistics[player]["availableMoves"].append(len(moves))
 
+    def __collectPnsStats(self, statistics: dict):
+        self.statistics["proves"].append(statistics["proof"])
+        self.statistics["disproves"].append(statistics["disproof"])
+
     def printStatistics(self):
         stats = self.statistics
         avgAvailableMovesWhite = sum(stats[self.whitePlayer]["availableMoves"]) / len(
@@ -186,3 +188,9 @@ class Game:
         print("  - avg available moves: " + str(avgAvailableMovesBlack))
         print("Avg number of moves: " + str(avgNumberOfMoves))
         print("Time elapsed: " + str(self.statistics["timeElapsed"]))
+
+    def printPnsStatistics(self):
+        print("\nProves")
+        print(Counter(self.statistics["proves"]))
+        print("\nDisproves")
+        print(Counter(self.statistics["disproves"]))

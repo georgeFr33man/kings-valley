@@ -1,24 +1,22 @@
 from game import Move
 from game import Board
-from time import time
+from time import time_ns
 from pns.Node import Node
 
 
 class Pns:
-    VAL_INF = float(10000000)
+    VAL_INF = float(10000)
 
     startTime: float = None
 
     def __init__(self, resources):
-        self.board = None
         self.resources = resources
 
-    def run(self, root: 'Move', startingBoard: 'Board', startingPlayer: str):
+    def run(self, root: 'Move', startingBoard: 'Board', startingPlayer: str) -> dict:
         # Start counting time
-        self.startTime = time()
+        self.startTime = time_ns()
 
         rootNode = Node(root, startingBoard, startingPlayer)
-        print('\nStarting Proof: ' + str(rootNode.proof) + '\nStarting Disproof: ' + str(rootNode.disproof))
         self.evaluate(rootNode)
         self.setProofAndDisproofNumbers(rootNode)
         current = rootNode
@@ -27,7 +25,7 @@ class Pns:
             self.expandNode(mostProving)
             current = self.updateAncestors(mostProving, rootNode)
 
-        print('\nProof: ' + str(rootNode.proof) + '\nDisproof: ' + str(rootNode.disproof))
+        return {'proof': rootNode.proof, 'disproof': rootNode.disproof}
 
     def evaluate(self, root: 'Node') -> None:
         root.evalGoal()
@@ -38,12 +36,16 @@ class Pns:
                 node.proof = 0
                 node.disproof = self.VAL_INF
                 for child in node.getChildren():
+                    if child.disproof is None or child.proof is None:
+                        break
                     node.proof += child.proof if child.proof is not None else 0
                     node.disproof = min(node.disproof, child.disproof)
             else:
                 node.proof = self.VAL_INF
                 node.disproof = 0
                 for child in node.getChildren():
+                    if child.disproof is None or child.proof is None:
+                        break
                     node.disproof += child.disproof if child.disproof is not None else 0
                     node.proof = min(node.proof, child.proof)
         else:
@@ -86,7 +88,6 @@ class Pns:
             else:
                 if child.proof == 0:
                     break
-        node.expanded = True
 
     def updateAncestors(self, node: 'Node', root: 'Node'):
         while node.isRoot() is False:
@@ -101,4 +102,4 @@ class Pns:
         return root
 
     def resourcesAvailable(self) -> bool:
-        return time() - self.startTime <= self.resources
+        return time_ns() - self.startTime <= self.resources

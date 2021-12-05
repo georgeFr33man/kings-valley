@@ -19,6 +19,6 @@ if __name__ == '__main__':
     # alphaBetaSortedTest = AlphaBetaSortedTest(2, 4)
     # alphaBetaSortedTest.run()
 
-    # 1 game, max 2 pre-moves, white player, ABS depth = 2, 10 seconds.
-    pnsTest = PnsTest(1, 1, Game.Game.whitePlayer, 2, 1)
+    # 100 game, max 2 pre-moves, white player, ABS depth = 0 (play random), 10 milliseconds.
+    pnsTest = PnsTest(1000, 10, Game.Game.whitePlayer, 0, 1000000)
     pnsTest.run()

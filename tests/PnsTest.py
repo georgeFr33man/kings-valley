@@ -1,6 +1,6 @@
 from __future__ import division
 import game as g
-from ai_algorithms import AlphaBetaSorted
+from ai_algorithms import AlphaBetaSorted, AlphaBeta
 
 
 class PnsTest:
@@ -16,7 +16,8 @@ class PnsTest:
         # Stop after given number of moves and try to proof win/lose of the selected player
         print("\n---------------------------------\n")
         print("Running PNS algorithm tests on " + str(self.__testCases) + " tests cases.")
-        game = g.Game.Game(None, None, self.__maxMoves, self.__playerName, self.__resources)
+        alphaBeta = AlphaBeta(2)
+        game = g.Game.Game(None, alphaBeta, self.__maxMoves, self.__playerName, self.__resources)
         for i in range(self.__testCases):
             # print("Playing: " + str(i + 1) + " game.")
             game.board.restoreStarterBoard()

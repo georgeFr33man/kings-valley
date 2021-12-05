@@ -38,7 +38,7 @@ class Pns:
                 for child in node.getChildren():
                     if child.disproof is None or child.proof is None:
                         break
-                    node.proof += child.proof if child.proof is not None else 0
+                    node.proof += child.proof
                     node.disproof = min(node.disproof, child.disproof)
             else:
                 node.proof = self.VAL_INF
@@ -46,7 +46,7 @@ class Pns:
                 for child in node.getChildren():
                     if child.disproof is None or child.proof is None:
                         break
-                    node.disproof += child.disproof if child.disproof is not None else 0
+                    node.disproof += child.disproof
                     node.proof = min(node.proof, child.proof)
         else:
             if node.value == node.NODE_WIN:

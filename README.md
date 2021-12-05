@@ -3,7 +3,8 @@
 1. <a href="#1">Złożoność.</a>
 2. <a href="#2">Algorytm MinMax.</a>
 3. <a href="#3">Porównanie MinMax z AlphaBeta</a>
-3. <a href="#4">Porównanie AlphaBeta z AlphaBeta + sortowanie</a>
+4. <a href="#4">Porównanie AlphaBeta z AlphaBeta + sortowanie</a>
+5. <a href="#5">Proof Number Search</a>
 
 
 <div id="1"></div>
@@ -105,3 +106,18 @@ Oba algorytmy rozegrały po 100 gier z losowym przeciwnikiem na głębokościach
 | 3     | 3.7204                          | 2.7929                                       | 100          | 100                     |
 | 4     | 41.1839                         | 26.7838                                      | 100          | 100                     |
 
+<div id="5"></div>
+
+## Proof Number Search
+Algorytm PNS przeprowadził sprawdzenie dla różnych ograniczeń czasowych, w każdym przypadku zostało sprawdzonych końcówek 100 końcówek gier.
+Początkowe ruchy zostały wykonane przez losowe algorytmy dla obydwu graczy.
+PNS był ograniczany czasowo dla pojedynczej gry.
+
+
+| # | Time limit (ms) | Sure win (%) | Sure lose (%) | Unsure (%) |
+|---|-----------------|--------------|---------------|------------|
+| 1 | 10              | 3            | 1             | 96         |
+| 2 | 100             | 9            | 1             | 90         |
+| 3 | 1000            | 11           | 12            | 77         |
+| 4 | 10000           | 52           | 48            | 0          |
+| 5 | 100000          | 56           | 44            | 0          |

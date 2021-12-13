@@ -90,7 +90,7 @@ class Game:
 
                 self.board.move(selectedMove)
             else:
-                selectedMove = self.__drawMove(availableMoves)
+                selectedMove = self.drawMove(availableMoves)
                 # Run PNS algorithm and break the game.
                 if runPns:
                     pns = Pns(self.resources)
@@ -145,7 +145,8 @@ class Game:
             "toY": toY - yDir
         }
 
-    def __drawMove(self, moves: list) -> game.Move.Move:
+    @classmethod
+    def drawMove(cls, moves: list) -> game.Move.Move:
         losing = 0
         random.shuffle(moves)
         for move in moves:

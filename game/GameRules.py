@@ -85,3 +85,7 @@ class GameRules:
             return False
 
         return True
+
+    @classmethod
+    def getOpponent(cls, playerName: str) -> str:
+        return game.Game.Game.whitePlayer if playerName == game.Game.Game.blackPlayer else game.Game.Game.blackPlayer

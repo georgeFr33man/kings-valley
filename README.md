@@ -6,7 +6,7 @@
 4. <a href="#4">Porównanie AlphaBeta z AlphaBeta + sortowanie</a>
 5. <a href="#5">Proof Number Search</a>
 6. <a href="#6">Monte-Carlo Search</a>
-7. <a href="#7">Monte-Carlo Search</a>
+7. <a href="#7">Monte-Carlo Tree Search</a>
 
 
 <div id="1"></div>

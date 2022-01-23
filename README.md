@@ -6,6 +6,7 @@
 4. <a href="#4">Porównanie AlphaBeta z AlphaBeta + sortowanie</a>
 5. <a href="#5">Proof Number Search</a>
 6. <a href="#6">Monte-Carlo Search</a>
+7. <a href="#7">Monte-Carlo Search</a>
 
 
 <div id="1"></div>
@@ -127,7 +128,7 @@ PNS był ograniczany czasowo dla pojedynczej gry.
 
 ## Monte-Carlo Search
 
-Algorytm rozgrywał 100 gier z losowym przeciwnikiem dla różych wartości 
+Algorytm rozgrywał 100 gier z losowym przeciwnikiem dla różnej liczby symulacji
 
 | # | NoF simulations | Win rate (%) | Avg. time for 1 game (s) |
 |---|-----------------|--------------|--------------------------|
@@ -138,4 +139,20 @@ Algorytm rozgrywał 100 gier z losowym przeciwnikiem dla różych wartości
 | 5 | 60              | 100          | 21.2179                  |
 | 6 | 80              | 100          | 30.4860                  |
 | 7 | 100             | 100          | 36.4503                  |
+
+<div id="7"></div>
+
+## Monte-Carlo Tree Search
+
+Algorytm rozgrywał 100 gier z losowym przeciwnikiem dla różnej liczby symulacji
+
+| # | NoF simulations | Win rate (%)  | Avg. time for 1 game (s) |
+|---|-----------------|---------------|--------------------------|
+| 1 | 5               | 94            | 3.2743                   |
+| 2 | 10              | 97            | 6.5105                   |
+| 3 | 20              | 99            | 11.9892                  |
+| 4 | 40              | 100           | 22.7537                  |
+| 5 | 60              | 100           | 33.9861                  |
+| 6 | 80              | 100           | 44.3718                  |
+| 7 | 100             | 100           | 56.4436                  |
 

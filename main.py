@@ -27,6 +27,6 @@ if __name__ == '__main__':
     # mcsTest = MonteCarloSearchTest(100, 20)
     # mcsTest.run()
 
-    mcts = MonteCarloTreeSearchTest(10, 20)
+    mcts = MonteCarloTreeSearchTest(100, 100)
     mcts.run()
 

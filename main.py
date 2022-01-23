@@ -3,6 +3,7 @@ from tests.MinMaxTest import MinMaxTest
 from tests.AlphaBetaTest import AlphaBetaTest
 from tests.AlphaBetaSortedTest import AlphaBetaSortedTest
 from tests.MonteCarloSearchTest import MonteCarloSearchTest
+from tests.MonteCarloTreeSearchTest import MonteCarloTreeSearchTest
 from tests.PnsTest import PnsTest
 from game import Game
 
@@ -23,6 +24,9 @@ if __name__ == '__main__':
     # pnsTest = PnsTest(100, 2, Game.Game.blackPlayer, 0, 100000)
     # pnsTest.run()
 
-    mcsTest = MonteCarloSearchTest(100, 20)
-    mcsTest.run()
+    # mcsTest = MonteCarloSearchTest(100, 20)
+    # mcsTest.run()
+
+    mcts = MonteCarloTreeSearchTest(10, 20)
+    mcts.run()
 
